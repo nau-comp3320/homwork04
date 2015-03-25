@@ -187,8 +187,6 @@ travel(From,To,Visited,Path) :-
 	not(mem(C,Visited)),
 	travel(C,To,[C|Visited],Path),!.
 
-%cant pass from path_to_self test.
-
 
 :- begin_tests(path_to).
 
@@ -240,7 +238,6 @@ maze_solution(From,To,Path,Len) :-
 	connected(From,Path),
 	len(Len,[_|Path]).
 
-%cant find the solution.
 
 
 
