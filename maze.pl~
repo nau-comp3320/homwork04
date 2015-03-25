@@ -232,15 +232,7 @@ test(path_from_0_0_to_1_0) :-
 %
 
 
-:- begin_tests(maze_solution).
-
-maze_solution(From,To,Path,Len):-
-	connected(From,From),
-	connected(From,To),
-	connected(From,Path),
-	connected(From,From),
-	len(Len,[_|Path]).
-
+:- begin_tests(maze_solution, [blocked('part 2, step 3')]).
 
 % find the solution, i.e. a path from  0,0 to 5,2
 test(maze_solution) :-
