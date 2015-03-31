@@ -1,81 +1,5 @@
-﻿%%%
-%%% Part I: Some basics
 %%%
-
-% Step 1: Create mem/2
-%
-% mem/2 will succeed if the first argument is a member of the second argument,
-% assumed to be a list.  Ensure that this rule stops as soon as it determines
-% that the element is in the list.
-%
-
-mem(X,[X|L]).
-mem(X,[Y|L]) :- mem(X,L).
-
-:- begin_tests(mem).
-
-test(at_front) :- mem(a, [a, b, c]).
-test(at_back) :- mem(c, [a, b, c]).
-test(not_there) :- \+ mem(d, [a, b, c]).
-
-:- end_tests(mem).
-
-% Step 2: Create rev/2
-%
-% Now, create a rule that will succeed if the first argument is a list and the
-% second argument is a list with the elements in reverse order.  Be sure to create
-% an efficient implementation that will only take linear time.  You are not
-% allowed to use append or any other rule except for those you may create for
-% this step.
-%
-% Hint: you will need to use an accumulator
-%
-accRev([H|T],A,R):-  accRev(T,[H|A],R).
-accRev([],A,A).
-rev(L,R):-  accRev(L,[],R).
-
-:- begin_tests(rev).
-
-test(empty_list) :- rev([], []).
-test(one_element) :- rev([a], [a]).
-test(two_elemnts) :- rev([a, b], [b, a]).
-test(more_elemnts) :- rev([a, b, 1, [], foo(a)], [foo(a), [], 1, b, a]).
-
-:- end_tests(rev).
-
-% Step 3: Create len/2
-%
-% Create a rule len/2 that will succeed if the first argument is the length or
-% number of elements in the second argument, a list.  Make sure all tests
-% succeed without a warning.
-%
-len(0,[]).
-len(N,[_|T]) :- len(X,T), N is X+1.
-
-
-:- begin_tests(len).
-
-test(empty_list) :- len(0, []).
-test(one_element) :- len(1, [a]).
-test(two_elements) :- len(2, [a, []]).
-test(many_elements) :- len(5, [a, [], 3, baz(bar), [a]]).
-
-:- end_tests(len).
-
-
-%%%
-%%% Part II: the maze
-%%%
-%
-% In this next part, you will be writing a Prolog program that will be able to
-% find the solution to the follwoing maze:
-%
-%   012345
-% 0 ╗╞╦═╗╥
-% 1 ╚╗╚╗╚╣
-% 2 ╞╩═╝╞╩
-%
-% The entrance the maze is in cell(0,0) at the upper left and the exit is at
+pper left and the exit is at
 % cell(5,2).  The structure of this maze is codified using the follwoing rules:
 
 corridor(cell(2,0), cell(2,1)).
@@ -106,10 +30,9 @@ corridor(cell(2,2), cell(1,2)).
 % will be true if there is a corridor between the two rooms (in any direction).
 %
 
-connected(X,Y) :- corridor(Y,X).
-connected(X,Y) :- corridor(X,Y).
 
-:- begin_tests(connected).
+
+:- begin_tests(connected, [blocked('part 2, step 1')]).
 
 % Tests that 2.0 connects to 2,1 and vice-versa
 test(connected_forward) :- connected(cell(2,0), cell(2,1)), !.
@@ -142,13 +65,10 @@ test(connected_to_1_2, set(X == [cell(0,2), cell(1,1), cell(2,2)])) :-
 %
 % Ensure that the tests pass with no warnings.
 %
-path_to(Start,End, Route):- connected(Start, End, [],R), rev(R, [], Route).
-connected(X,X,T,[X|T).
-connected(Place, End, T, R):- corridor(Place, Next), mem(Next,T), connected(Next,End,[Place|t],R).
 
 
 
-:- begin_tests(path_to).
+:- begin_tests(path_to, [blocked('part 2, step 2')]).
 
 % verify that a path from a cell to itself consists of just the one cell
 test(path_to_self) :-
@@ -192,7 +112,7 @@ test(path_from_0_0_to_1_0) :-
 %
 
 
-:- begin_tests(maze_solution).
+:- begin_tests(maze_solution, [blocked('part 2, step 3')]).
 
 % find the solution, i.e. a path from  0,0 to 5,2
 test(maze_solution) :-
@@ -205,3 +125,5 @@ test(maze_solution) :-
     14).
 
 :- end_tests(maze_solution).
+
+
