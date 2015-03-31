@@ -114,7 +114,7 @@ corridor(cell(2,2), cell(1,2)).
 %
 
 connected(X,Y) :- corridor(X,Y).
-connected(X,Y) :- corridor(Y,X).
+connected(X,Y) :- corridor(Y, X).
 
 
 :- begin_tests(connected).
@@ -151,10 +151,22 @@ test(connected_to_1_2, set(X == [cell(0,2), cell(1,1), cell(2,2)])) :-
 % Ensure that the tests pass with no warnings.
 %
 
-path_to(Start,End, Route):- connected(Start, End, [],R), rev(R,[], Route).
-connected(X,X,T,[X|T).
-connected(Place, End,T,R) :- corridor(Place,Next), \+mem(Next,T), connected(Next,End,[Place|t],R).
+path_to(From,To,Path) :- connected(From,To); connected(To,From);
+                         connected(To,Path);
+			 connected(From,Path),!.
 
+
+path_to(X,Y,[X,Y]):-corridor(X,Y),!.
+path_to(X,Y,[X|R]):-corridor(X,Z),path_to(Z,Y,R),!.
+
+
+path_to(From,To,Path) :- go(From,To,[From],L),rev(L,Path),!.
+
+go(From,To,Path,[To|Path]) :-	connected(From,To),!.
+
+
+go(From,To,Visited,Path) :-connected(From,C), C\==To,\+(mem(C,Visited)),
+	go(C,To,[C|Visited],Path),!.
 
 :- begin_tests(path_to).
 
@@ -199,8 +211,14 @@ test(path_from_0_0_to_1_0) :-
 % program that does something interesting.  Congratulations!
 %
 
+maze_solution(From,To,Path,Length) :-
+	connected(From,From),
+	connected(From,To),
+	connected(From,Path),
+	len(Length,Path).
 
-:- begin_tests(maze_solution, [blocked('part 2, step 3')]).
+
+:- begin_tests(maze_solution).
 
 % find the solution, i.e. a path from  0,0 to 5,2
 test(maze_solution) :-

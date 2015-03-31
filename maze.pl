@@ -9,6 +9,9 @@
 % that the element is in the list.
 %
 
+mem(X, [_|T]) :- mem(X,T),!.
+mem(X, [X|_]).
+
 
 :- begin_tests(mem).
 
@@ -29,8 +32,13 @@ test(not_there) :- \+ mem(d, [a, b, c]).
 % Hint: you will need to use an accumulator
 %
 
+rev(L,R):-  reverse(L,[],R).
+reverse([H|T],A,R) :- reverse(T,[H|A],R).
+reverse([],A,A).
 
-:- begin_tests(rev, [blocked('part 1, step 2')]).
+
+
+:- begin_tests(rev).
 
 test(empty_list) :- rev([], []).
 test(one_element) :- rev([a], [a]).
@@ -46,8 +54,13 @@ test(more_elemnts) :- rev([a, b, 1, [], foo(a)], [foo(a), [], 1, b, a]).
 % succeed without a warning.
 %
 
+acc(L,[_|T],A)  :-    A1  is  A+1,  acc(L,T,A1),!.
+acc(A,[],A).
+len(Length, List) :- acc(Length,List,0).
 
-:- begin_tests(len, [blocked('part 1, step 3')]).
+
+
+:- begin_tests(len).
 
 test(empty_list) :- len(0, []).
 test(one_element) :- len(1, [a]).
@@ -100,9 +113,11 @@ corridor(cell(2,2), cell(1,2)).
 % will be true if there is a corridor between the two rooms (in any direction).
 %
 
+connected(X,Y) :- corridor(X,Y).
+connected(X,Y) :- corridor(Y, X).
 
 
-:- begin_tests(connected, [blocked('part 2, step 1')]).
+:- begin_tests(connected).
 
 % Tests that 2.0 connects to 2,1 and vice-versa
 test(connected_forward) :- connected(cell(2,0), cell(2,1)), !.
@@ -113,9 +128,9 @@ test(connected_from_0_0, all(X == [cell(0,1)])) :- connected(cell(0,0), X).
 test(connected_to_0_0, all(X == [cell(0,1)])) :- connected(X, cell(0,0)).
 
 % Find all cells connected to/from 1,3
-test(connected_from_1_2, set(X == [cell(0,2), cell(1,1), cell(2,2)])) :- 
+test(connected_from_1_2, set(X == [cell(0,2), cell(1,1), cell(2,2)])) :-
   connected(cell(1,2), X).
-test(connected_to_1_2, set(X == [cell(0,2), cell(1,1), cell(2,2)])) :- 
+test(connected_to_1_2, set(X == [cell(0,2), cell(1,1), cell(2,2)])) :-
   connected(X, cell(1,2)).
 
 :- end_tests(connected).
@@ -136,9 +151,24 @@ test(connected_to_1_2, set(X == [cell(0,2), cell(1,1), cell(2,2)])) :-
 % Ensure that the tests pass with no warnings.
 %
 
+path_to(From,To,Path) :- connected(From,To); connected(To,From);
+                         connected(To,Path);
+			 connected(From,Path),!.
 
 
-:- begin_tests(path_to, [blocked('part 2, step 2')]).
+path_to(X,Y,[X,Y]):-corridor(X,Y),!.
+path_to(X,Y,[X|R]):-corridor(X,Z),path_to(Z,Y,R),!.
+
+
+path_to(From,To,Path) :- go(From,To,[From],L),rev(L,Path),!.
+
+go(From,To,Path,[To|Path]) :-	connected(From,To),!.
+
+
+go(From,To,Visited,Path) :-connected(From,C), C\==To,\+(mem(C,Visited)),
+	go(C,To,[C|Visited],Path),!.
+
+:- begin_tests(path_to).
 
 % verify that a path from a cell to itself consists of just the one cell
 test(path_to_self) :-
@@ -181,8 +211,14 @@ test(path_from_0_0_to_1_0) :-
 % program that does something interesting.  Congratulations!
 %
 
+maze_solution(From,To,Path,Length) :-
+	connected(From,To),
+	connected(To,From),
+	connected(To,Path),
+	len(Length,Path).
 
-:- begin_tests(maze_solution, [blocked('part 2, step 3')]).
+
+:- begin_tests(maze_solution).
 
 % find the solution, i.e. a path from  0,0 to 5,2
 test(maze_solution) :-
@@ -195,5 +231,23 @@ test(maze_solution) :-
     14).
 
 :- end_tests(maze_solution).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
