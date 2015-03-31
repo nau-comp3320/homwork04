@@ -212,9 +212,9 @@ test(path_from_0_0_to_1_0) :-
 %
 
 maze_solution(From,To,Path,Length) :-
+	connected(From,From),
 	connected(From,To),
-	connected(To,From),
-	connected(To,Path),
+	connected(From,Path),
 	len(Length,Path).
 
 
