@@ -8,13 +8,14 @@
 % assumed to be a list.  Ensure that this rule stops as soon as it determines
 % that the element is in the list.
 %
-
+mem(X, [X|L]).
+mem(X, [Y|L]) :-  mem(X,L).
 
 :- begin_tests(mem).
 
 test(at_front) :- mem(a, [a, b, c]).
 test(at_back) :- mem(c, [a, b, c]).
-test(not_there) :- \+ mem(d, [a, b, c]).
+test(not_there) :- \+ mem(d,[a, b, c]).
 
 :- end_tests(mem).
 
@@ -28,7 +29,9 @@ test(not_there) :- \+ mem(d, [a, b, c]).
 %
 % Hint: you will need to use an accumulator
 %
-
+accRev([H|T],A,R):- accRev(T,[H|A],R).
+accRev([],A,A).
+rev(L,R):-  accRev(L,[],R).
 
 :- begin_tests(rev, [blocked('part 1, step 2')]).
 
@@ -45,7 +48,8 @@ test(more_elemnts) :- rev([a, b, 1, [], foo(a)], [foo(a), [], 1, b, a]).
 % number of elements in the second argument, a list.  Make sure all tests
 % succeed without a warning.
 %
-
+len(0,[]).
+len(N,[_|T])  :-  len(X,T),  N  is  X+1.
 
 :- begin_tests(len, [blocked('part 1, step 3')]).
 
@@ -92,8 +96,8 @@ corridor(cell(2,2), cell(1,2)).
 
 % In these rules, each rule corridor(X,Y) states there is a corridor leading
 % from room X to room Y.
-
-
+connected(X,Y) :- corridor(X,Y).
+connected(X,Y) :- connected(Y,X).
 % Step 1: Are two rooms connected?
 %
 % The corridor/2 rule only works one way.  Create a new rule connected/2 that
@@ -113,9 +117,9 @@ test(connected_from_0_0, all(X == [cell(0,1)])) :- connected(cell(0,0), X).
 test(connected_to_0_0, all(X == [cell(0,1)])) :- connected(X, cell(0,0)).
 
 % Find all cells connected to/from 1,3
-test(connected_from_1_2, set(X == [cell(0,2), cell(1,1), cell(2,2)])) :- 
+test(connected_from_1_2, set(X == [cell(0,2), cell(1,1), cell(2,2)])) :-
   connected(cell(1,2), X).
-test(connected_to_1_2, set(X == [cell(0,2), cell(1,1), cell(2,2)])) :- 
+test(connected_to_1_2, set(X == [cell(0,2), cell(1,1), cell(2,2)])) :-
   connected(X, cell(1,2)).
 
 :- end_tests(connected).
@@ -136,7 +140,13 @@ test(connected_to_1_2, set(X == [cell(0,2), cell(1,1), cell(2,2)])) :-
 % Ensure that the tests pass with no warnings.
 %
 
+%accRev([H|T],A,R):- accRev(T,[H|A],R).
+%accRev([],A,A).
+%rev(L,R):-  accRev(L,[],R).
 
+path_to(X,X,[X]). 
+path_to(X,Y,[X,Y]).
+path_to(X,Y,[Y,X]).
 
 :- begin_tests(path_to, [blocked('part 2, step 2')]).
 
